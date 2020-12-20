@@ -1,0 +1,20 @@
+[package]
+name    = "tun"
+version = "0.4.4"
+authors = ["meh. <meh@schizofreni.co>"]
+license = "WTFPL"
+description = "TUN device creation and handling."
+repository  = "https://github.com/meh/rust-tun"
+keywords    = ["tun", "network", "tunnel", "bindings"]
+edition = "2018"
+
+[dependencies]
+libc      = "0.2"
+ioctl-sys = "0.6"
+
+[dependencies.mio]
+version = "0.7"
+features = [ "os-ext" ]
+
+[features]
+default = [ ]

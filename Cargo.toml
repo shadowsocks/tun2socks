@@ -1,0 +1,51 @@
+[package]
+name = "tun2socks"
+version = "0.1.0"
+authors = ["luozijun <luozijun.assistant@gmail.com>"]
+edition = "2018"
+
+[workspace]
+members = [
+    "crates/netlink",
+    "crates/sysconfig",
+    "crates/sysctl",
+    "crates/tun",
+]
+
+[dependencies]
+log        = "0.4"
+env_logger = { version = "0.8", default-features = false, features = ["termcolor", "atty", "humantime"] }
+
+libc      = "0.2"
+mio       = { version = "0.7", features = ["os-ext", "net"] }
+ctrlc     = { version = "3.1", features = ["termination"] }
+smoltcp   = { version = "0.6", default-features = false, features = ["std", "ethernet", "proto-ipv4", "proto-ipv6", "socket-tcp"] }
+tun       = { path = "crates/tun" }
+
+[features]
+default = [
+    
+]
+
+[patch.crates-io]
+smoltcp = { git = "https://github.com/LuoZijun/smoltcp.git", branch = "tun2socks" }
+
+
+# [profile.dev]
+# opt-level = 0
+# debug = true
+# rpath = false
+# lto = false
+# debug-assertions = true
+# codegen-units = 3
+# panic = 'unwind'
+# incremental = false
+
+# [profile.release]
+# opt-level = 3
+# debug = false
+# rpath = false
+# lto = true
+# debug-assertions = false
+# panic = 'unwind'
+# incremental = false
