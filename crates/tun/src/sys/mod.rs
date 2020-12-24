@@ -8,9 +8,9 @@ use std::os::unix::io::AsRawFd;
 
 
 #[cfg(target_os = "linux")]
-use libc::{c_uint, c_ushort};
+use libc::c_ushort;
 #[cfg(target_os = "macos")]
-use libc::{c_uint, c_uchar};
+use libc::c_uchar;
 
 use libc::{sockaddr, sockaddr_in, in_addr};
 
@@ -59,17 +59,18 @@ impl SockAddr {
 
 impl From<Ipv4Addr> for SockAddr {
     fn from(ip: Ipv4Addr) -> SockAddr {
-        let     parts = ip.octets();
+        let    octets = ip.octets();
         let mut addr  = unsafe { mem::zeroed::<sockaddr_in>() };
 
         addr.sin_family = AF_INET;
         addr.sin_port   = 0;
-        addr.sin_addr   = in_addr { s_addr:
-            ((parts[3] as c_uint) << 24) |
-            ((parts[2] as c_uint) << 16) |
-            ((parts[1] as c_uint) <<  8) |
-            ((parts[0] as c_uint))
-        };
+        // addr.sin_addr   = in_addr { s_addr:
+        //     ((octets[3] as libc::c_uint) << 24) |
+        //     ((octets[2] as libc::c_uint) << 16) |
+        //     ((octets[1] as libc::c_uint) <<  8) |
+        //     ((octets[0] as libc::c_uint))
+        // };
+        addr.sin_addr = in_addr { s_addr: u32::from_ne_bytes(octets) };
 
         SockAddr(addr)
     }
@@ -78,12 +79,14 @@ impl From<Ipv4Addr> for SockAddr {
 impl Into<Ipv4Addr> for SockAddr {
     fn into(self) -> Ipv4Addr {
         let ip = self.0.sin_addr.s_addr;
+        let [a, b, c, d] = ip.to_ne_bytes();
 
-        Ipv4Addr::new(
-            ((ip      ) & 0xff) as u8,
-            ((ip >>  8) & 0xff) as u8,
-            ((ip >> 16) & 0xff) as u8,
-            ((ip >> 24) & 0xff) as u8)
+        Ipv4Addr::new(a, b, c, d)
+        // Ipv4Addr::new(
+        //     ((ip      ) & 0xff) as u8,
+        //     ((ip >>  8) & 0xff) as u8,
+        //     ((ip >> 16) & 0xff) as u8,
+        //     ((ip >> 24) & 0xff) as u8)
     }
 }
 
